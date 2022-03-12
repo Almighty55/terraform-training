@@ -1,10 +1,10 @@
 resource "aws_s3_bucket" "tf_state_bucket" {
-  bucket = "alaraj-terraform-state1"
+  bucket = "alaraj-terraform-state"
   #! THIS IS TRUE FOR TESTING
   force_destroy = true
   lifecycle {
     #! THIS IS FALSE FOR TESTING
-    prevent_destroy = false
+    #prevent_destroy = false
   }
 }
 resource "aws_s3_bucket_versioning" "versioning_tf_state" {

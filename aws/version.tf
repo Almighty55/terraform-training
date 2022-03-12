@@ -7,9 +7,10 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "alaraj-terraform-state1"
+    bucket         = "alaraj-terraform-state"
     key            = "global/s3/terraform.tfstate"
     region         = "us-east-1"
+    #! disabled for testing
     #dynamodb_table = "terraform-state-locking"
     encrypt        = true
   }
