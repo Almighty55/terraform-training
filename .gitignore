@@ -1,0 +1,5 @@
+# terraform providers
+aws/.terraform
+
+# lock file
+aws/.terraform.lock.hcl
