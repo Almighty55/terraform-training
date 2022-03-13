@@ -3,3 +3,6 @@ aws/.terraform
 
 # lock file
 aws/.terraform.lock.hcl
+
+# ignore keys
+aws/keys

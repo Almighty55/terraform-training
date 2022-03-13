@@ -7,7 +7,7 @@ $tfRegion = Get-Content -Path "version.tf" | Select-String "region" | Select-Obj
 $region = ([regex]::match($tfRegion, '(?<=")(?:\\.|[^"\\])*(?=")')).Value
 
 # create s3 state bucket via cli
-aws s3api create-bucket --bucket $bucketName --region $region
+aws s3api create-bucket --bucket $bucketName --region $region >$null 2>&1
 #* if anything other than us-east-1 then the location constraint is needed
 #aws s3api create-bucket --bucket "ENTER_NAME" --region "ENTER_REGION" --create-bucket-configuration LocationConstraint="ENTER_REGION"
 

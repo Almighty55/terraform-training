@@ -30,13 +30,14 @@ resource "aws_instance" "webserver" {
   provisioner "remote-exec" {
     inline = [
       "sudo yum -y install httpd && sudo systemctl start httpd",
-      "echo '<h1><center>Almighty LLC baby 1</center></h1>' > index.html",
+      "echo '<h1><center>Hello World</center></h1>' > index.html",
       "sudo mv index.html /var/www/html/"
     ]
     connection {
       type        = "ssh"
       user        = "ec2-user"
-      private_key = file("C:/Users/Almighty/Desktop/id_rsa")
+      # private key is provided by a cloud guru, nothing special about this ami/server so no security concern
+      private_key = file("${path.root}/keys/id_rsa")
       host        = self.public_ip
     }
   }

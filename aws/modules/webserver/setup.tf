@@ -9,20 +9,9 @@ data "aws_ssm_parameter" "webserver-ami" {
   name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
 }
 
-# Create VPC in us-east-1
-resource "aws_vpc" "vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-  tags = {
-    Custodian = "managed-by-terraform"
-    Name = "terraform-vpc"
-  }
-}
-
 # Create IGW in us-east-1
 resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = var.vpc_id.id
   tags = {
     Custodian = "managed-by-terraform"
   }
@@ -36,7 +25,7 @@ data "aws_route_table" "main_route_table" {
   }
   filter {
     name   = "vpc-id"
-    values = [aws_vpc.vpc.id]
+    values = [var.vpc_id.id]
   }
 }
 # Create route table in us-east-1
@@ -60,19 +49,18 @@ data "aws_availability_zones" "azs" {
 # Create subnet # 1 in us-east-1
 resource "aws_subnet" "subnet" {
   availability_zone = element(data.aws_availability_zones.azs.names, 0)
-  vpc_id            = aws_vpc.vpc.id
+  vpc_id            = var.vpc_id.id
   cidr_block        = "10.0.1.0/24"
   tags = {
     Custodian = "managed-by-terraform"
   }
 }
 
-
 # Create SG for allowing TCP/80 & TCP/22
 resource "aws_security_group" "sg" {
   name        = "webserver-sg"
   description = "Allow TCP/80 & TCP/22"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = var.vpc_id.id
   ingress {
     description = "Allow SSH traffic"
     from_port   = 22
