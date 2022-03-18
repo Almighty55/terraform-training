@@ -2,7 +2,7 @@
 resource "aws_instance" "webserver" {
   #* HOSTNAME SCHEME
   /*
-    #? Total of 15 characters MAX but not all have to be used
+    #? Total of 17 characters MAX but not all have to be used
     #? Note: Domain and company are interchangeble for character limits
     #*  First character designates the domain
           Example: S (silly.net), B (boom.net), X (not bound to a domain)
@@ -12,13 +12,15 @@ resource "aws_instance" "webserver" {
           Example: C1 (Chicago first office), C2 (Chicago second office), UW2 (us-west-2), UE1 (us-east-1)
     #*  Next 1 character designates OS
           Example: W (windows), L (linux), M (macOS), E (embedded firmware)
-    #*  Next 1 character designates service level environment
-          Example: P (Production), D (Development), T (Testing), U (User Acceptance Testing "UAT"), S (Staging)
     #*  Next 1 character designates internal or external connections
           Example: I (internal), E (external)
-   #*   Next 6 characters designates device function
+    #*  Next 1 character designates service level environment
+          Example: P (Production), D (Development), T (Testing), U (User Acceptance Testing "UAT"), S (Staging)
+    #*   Next 6 characters designates device function
           Example: TS (TermServ), WEBSRV (Website Server), DC (Domain Controller), SQL (SQL Server), FIREWL (Firewall), BAKSRV (Backup Server)
-                  APPSRV (Application Server), FS (File Share), HYPVIS (Hypervisor) */
+                  APPSRV (Application Server), FS (File Share), HYPVIS (Hypervisor)
+    #*   Next 2 characters designates the server number or version starting at "01"
+          Example: XAUE1LDISQL01, XAUE1LDISQL02, XAUE1LDEWEBSRV01, XAUE1LDEWEBSRV02*/
 
   ami                         = data.aws_ssm_parameter.webserver-ami.value
   instance_type               = "t3.micro"
@@ -43,6 +45,6 @@ resource "aws_instance" "webserver" {
   }
   tags = {
     Custodian = "managed-by-terraform"
-    Name      = "XAUE1LDEWEBSRV"
+    Name      = "XAUE1LEDWEBSRV01"
   }
 }
