@@ -1,3 +1,12 @@
+# test aws creds
+try {
+    Get-STSCallerIdentity
+}
+catch {
+    # once selenium script is finished that should be plugged in here to auto update
+    Update-eAWSCreds
+} 
+
 Set-Location -Path ..
 # Get the bucket name and region from the version.tf configuration
 $tfBucket = Get-Content -Path "version.tf" | Select-String "bucket" | Select-Object -ExpandProperty line
