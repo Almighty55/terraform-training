@@ -1,6 +1,6 @@
 # test aws creds
 try {
-    Get-STSCallerIdentity
+    Get-STSCallerIdentity | Out-Null
 }
 catch {
     # once selenium script is finished that should be plugged in here to auto update
