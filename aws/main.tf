@@ -5,7 +5,7 @@ module "backend" {
 module "webserver" {
   source = "./modules/webserver"
   # get the value from the vpc module output to use within webserver module
-  vpc_id = module.vpc.vpc_id 
+  vpc_id = module.vpc.vpc_id_output
 }
 
 module "vpc" {

@@ -30,7 +30,7 @@ resource "aws_instance" "webserver" {
   provisioner "remote-exec" {
     inline = [
       "sudo yum -y install httpd && sudo systemctl start httpd",
-      "echo '<h1><center>Hello World</center></h1>' > index.html",
+      "echo '<h1><center>Hello World!</center></h1>' > index.html",
       "sudo mv index.html /var/www/html/"
     ]
     connection {
