@@ -1,4 +1,18 @@
-#Create and bootstrap sqlserver
+/* helpful commands
+  get ami id off arn build
+  aws imagebuilder get-image --image-build-version-arn "arn:aws:imagebuilder:us-east-1:aws:image/windows-server-2022-english-full-base-x86/2022.3.9"
+  get owner ID
+  aws ec2 describe-images --image-ids "ami-09a4a092e0d0ed511" --region us-east-1 */
+data "aws_ami" "windows_2022" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["Windows_Server-2022-English-Full-Base-*"]
+  }
+  owners = ["801119661308"] # AWS owner ID
+}
+
+#Create sqlserver
 resource "aws_instance" "sqlserver" {
   #* HOSTNAME SCHEME
   /*
@@ -28,21 +42,8 @@ resource "aws_instance" "sqlserver" {
   associate_public_ip_address = true
   vpc_security_group_ids      = [var.sql_sg_output.id]
   subnet_id                   = var.subnet_ouput.id
+  user_data                   = "${path.module}/build_script.txt"
 
-  /*   provisioner "remote-exec" {
-    inline = [
-      "sudo yum -y install httpd && sudo systemctl start httpd",
-      "echo '<h1><center>XAUE1LDISQL - sqlserver!</center></h1>' > index.html",
-      "sudo mv index.html /var/www/html/"
-    ]
-    connection {
-      type = "ssh"
-      user = "ec2-user"
-      # private key is provided by a cloud guru, nothing special about this ami/server so no security concern
-      private_key = file("${path.root}/keys/id_rsa")
-      host        = self.public_ip
-    }
-  } */
   tags = {
     Custodian = "managed-by-terraform"
     Name      = "XAUE1LIDSQL01"
