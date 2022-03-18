@@ -2,12 +2,18 @@ module "backend" {
   source = "./modules/backend"
 }
 
-module "webserver" {
-  source = "./modules/webserver"
-  # get the value from the vpc module output to use within webserver module
-  vpc_id = module.vpc.vpc_id_output
-}
-
 module "vpc" {
   source = "./modules/vpc"
+}
+
+module "webserver" {
+  source = "./modules/ec2/webserver"
+  # get the value from the vpc module output to use within webserver module
+  vpc_output    = module.vpc.vpc_output
+  web_sg_output = module.sg.web_sg_output
+}
+
+module "sg" {
+  source     = "./modules/ec2/sg"
+  vpc_output = module.vpc.vpc_output
 }

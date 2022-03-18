@@ -24,7 +24,7 @@ resource "aws_instance" "webserver" {
   instance_type               = "t3.micro"
   key_name                    = aws_key_pair.webserver-key.key_name
   associate_public_ip_address = true
-  vpc_security_group_ids      = [aws_security_group.sg.id]
+  vpc_security_group_ids      = [var.web_sg_output.id]
   subnet_id                   = aws_subnet.subnet.id
 
   provisioner "remote-exec" {
