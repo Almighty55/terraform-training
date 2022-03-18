@@ -2,7 +2,7 @@
 resource "aws_key_pair" "webserver-key" {
   key_name   = "webserver-key"
   # folder that contains keys but is under gitignore. terraform/aws/keys
-  public_key = file("${path.module}/../../keys/id_rsa.pub")
+  public_key = file("${path.root}/keys/id_rsa.pub")
 }
 
 # Get Linux AMI ID using SSM Parameter endpoint in us-east-1
