@@ -4,4 +4,4 @@ variable "vpc_output" {}
 variable "subnet_ouput" {}
 
 # sg module
-variable "web_sg_output" {}
+variable "sql_sg_output" {}

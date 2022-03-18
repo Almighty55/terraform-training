@@ -22,14 +22,14 @@ resource "aws_instance" "sqlserver" {
     #*   Next 2 characters designates the server number or version starting at "01"
           Example: XAUE1LDISQL01, XAUE1LDISQL02, XAUE1LDEWEBSRV01, XAUE1LDEWEBSRV02*/
 
-  ami                         = data.aws_ssm_parameter.sqlserver-ami.value
-  instance_type               = "t3.micro"
+  ami                         = data.aws_ami.windows_2022.id
+  instance_type               = "t3.medium"
   key_name                    = aws_key_pair.sqlserver-key.key_name
   associate_public_ip_address = true
-  vpc_security_group_ids      = [var.web_sg_output.id]
+  vpc_security_group_ids      = [var.sql_sg_output.id]
   subnet_id                   = var.subnet_ouput.id
 
-  provisioner "remote-exec" {
+  /*   provisioner "remote-exec" {
     inline = [
       "sudo yum -y install httpd && sudo systemctl start httpd",
       "echo '<h1><center>XAUE1LDISQL - sqlserver!</center></h1>' > index.html",
@@ -42,7 +42,7 @@ resource "aws_instance" "sqlserver" {
       private_key = file("${path.root}/keys/id_rsa")
       host        = self.public_ip
     }
-  }
+  } */
   tags = {
     Custodian = "managed-by-terraform"
     Name      = "XAUE1LIDSQL01"
