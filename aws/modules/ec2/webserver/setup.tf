@@ -1,6 +1,6 @@
 # Create key-pair for logging into EC2 in us-east-1
 resource "aws_key_pair" "webserver-key" {
-  key_name   = "webserver-key"
+  key_name = "webserver-key"
   # folder that contains keys but is under gitignore. terraform/aws/keys
   public_key = file("${path.root}/keys/id_rsa.pub")
 }
@@ -8,51 +8,4 @@ resource "aws_key_pair" "webserver-key" {
 # Get Linux AMI ID using SSM Parameter endpoint in us-east-1
 data "aws_ssm_parameter" "webserver-ami" {
   name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
-}
-
-# Create IGW in us-east-1
-resource "aws_internet_gateway" "igw" {
-  vpc_id = var.vpc_output.id
-  tags = {
-    Custodian = "managed-by-terraform"
-  }
-}
-
-# Get main route table to modify
-data "aws_route_table" "main_route_table" {
-  filter {
-    name   = "association.main"
-    values = ["true"]
-  }
-  filter {
-    name   = "vpc-id"
-    values = [var.vpc_output.id]
-  }
-}
-# Create route table in us-east-1
-resource "aws_default_route_table" "internet_route" {
-  default_route_table_id = data.aws_route_table.main_route_table.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-  tags = {
-    Custodian = "managed-by-terraform"
-    Name = "WebServer-RouteTable"
-  }
-}
-
-# Get all available AZ's in VPC for master region
-data "aws_availability_zones" "azs" {
-  state = "available"
-}
-
-# Create subnet # 1 in us-east-1
-resource "aws_subnet" "subnet" {
-  availability_zone = element(data.aws_availability_zones.azs.names, 0)
-  vpc_id            = var.vpc_output.id
-  cidr_block        = "10.0.1.0/24"
-  tags = {
-    Custodian = "managed-by-terraform"
-  }
 }

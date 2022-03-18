@@ -26,8 +26,8 @@ resource "aws_security_group" "web_sg" {
   tags = {
     Custodian = "managed-by-terraform"
   }
-  lifecycle { 
+  lifecycle {
     # create a new sg in the event this one needs to be modified
-    create_before_destroy = true 
-    }
+    create_before_destroy = true
+  }
 }

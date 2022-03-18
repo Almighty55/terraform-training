@@ -19,13 +19,13 @@ resource "aws_instance" "webserver" {
    #*   Next 6 characters designates device function
           Example: TS (TermServ), WEBSRV (Website Server), DC (Domain Controller), SQL (SQL Server), FIREWL (Firewall), BAKSRV (Backup Server)
                   APPSRV (Application Server), FS (File Share), HYPVIS (Hypervisor) */
-  
+
   ami                         = data.aws_ssm_parameter.webserver-ami.value
   instance_type               = "t3.micro"
   key_name                    = aws_key_pair.webserver-key.key_name
   associate_public_ip_address = true
   vpc_security_group_ids      = [var.web_sg_output.id]
-  subnet_id                   = aws_subnet.subnet.id
+  subnet_id                   = var.subnet_ouput.id
 
   provisioner "remote-exec" {
     inline = [
@@ -34,8 +34,8 @@ resource "aws_instance" "webserver" {
       "sudo mv index.html /var/www/html/"
     ]
     connection {
-      type        = "ssh"
-      user        = "ec2-user"
+      type = "ssh"
+      user = "ec2-user"
       # private key is provided by a cloud guru, nothing special about this ami/server so no security concern
       private_key = file("${path.root}/keys/id_rsa")
       host        = self.public_ip
@@ -43,6 +43,6 @@ resource "aws_instance" "webserver" {
   }
   tags = {
     Custodian = "managed-by-terraform"
-    Name = "XAUE1LDEWEBSRV"
+    Name      = "XAUE1LDEWEBSRV"
   }
 }
