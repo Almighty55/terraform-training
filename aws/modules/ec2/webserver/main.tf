@@ -26,7 +26,7 @@ resource "aws_instance" "webserver" {
   instance_type               = "t3.medium"
   key_name                    = aws_key_pair.webserver-key.key_name
   associate_public_ip_address = true
-  vpc_security_group_ids      = [var.web_sg_output.id]
+  vpc_security_group_ids      = var.web_sg_output.*.id
   subnet_id                   = var.subnet_ouput.id
 
   provisioner "remote-exec" {

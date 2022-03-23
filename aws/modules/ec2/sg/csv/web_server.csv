@@ -1,0 +1,5 @@
+Description,Type,CIDR,Protocol,From_port,To_port
+ssh_inbound,ingress,"0.0.0.0/0",TCP,22,22
+http_inbound,ingress,"0.0.0.0/0",TCP,80,80
+https_inbound,ingress,"0.0.0.0/0",TCP,443,443
+any_outbound,egress,"0.0.0.0/0",-1,0,0
