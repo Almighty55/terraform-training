@@ -26,5 +26,12 @@ if (Test-Path "terraform.tfstate") {
     Remove-Item -Path "terraform.tfstate" -Recurse -Force
 }
 
+# purge aws creds
+$accessKeyID = ""
+$secretAccessKey = ""
+$newCreds = @("[default]", "aws_access_key_id = $accessKeyID", "aws_secret_access_key = $secretAccessKey")
+Set-Content -path "C:\Users\$env:USERNAME\.aws\credentials" -Value $newCreds
+  
 Write-Host -BackgroundColor Black -ForegroundColor Yellow "WARNING: Terraform backend has been destroyed.`nPlease run tf_state_setup.ps1 to setup backend again."
-Set-Location -Path -
+# back out of script directory
+# Set-Location -Path -
