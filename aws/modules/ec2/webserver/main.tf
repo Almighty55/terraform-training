@@ -23,7 +23,7 @@ resource "aws_instance" "webserver" {
           Example: XAUE1LDISQL01, XAUE1LDISQL02, XAUE1LDEWEBSRV01, XAUE1LDEWEBSRV02*/
 
   ami                         = data.aws_ssm_parameter.webserver-ami.value
-  instance_type               = "t3.micro"
+  instance_type               = "t3.medium"
   key_name                    = aws_key_pair.webserver-key.key_name
   associate_public_ip_address = true
   vpc_security_group_ids      = [var.web_sg_output.id]

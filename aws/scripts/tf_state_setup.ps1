@@ -19,6 +19,8 @@ try {
 
     # create s3 state bucket via cli
     if ($region -eq "us-east-1") {
+        #TODO: Add in error handling to catch if the bucket name is conflicting
+        #! An error occurred (OperationAborted) when calling the CreateBucket operation: A conflicting conditional operation is currently in progress against this resource. Please try again.
         aws s3api create-bucket --bucket $bucketName --region $region >$null 2>&1
     }
     else {
@@ -29,6 +31,8 @@ try {
     # cd to the root then run terraform init
     terraform init
     terraform apply --auto-approve
+    # back into the script directory
+    Set-Location -Path -
 }
 catch {
     Write-Error "There was an error with the setup, please make sure the following are valid:
