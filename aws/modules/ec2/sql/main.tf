@@ -54,7 +54,8 @@ resource "aws_instance" "sqlserver" {
 
   tags = {
     Custodian = "managed-by-terraform"
-    #TODO: Add some logic to the indedx count if it's double digit then don't add in the '0'
-    Name = "XAUE1WIDSQL0${count.index}"
+    # nested terraform if else logic, but it checks if a '0' should be appended or not
+    # ${count.index} starts at 0 so the '9' condition would technically be the 10th server
+    Name = "${count.index}" == 00 ? "XAUE1WIDSQL01" : "${count.index}" >= 9 ? "XAUE1WIDSQL${count.index + 1}" : "XAUE1WIDSQL0${count.index + 1}"
   }
 }

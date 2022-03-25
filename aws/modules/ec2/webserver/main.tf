@@ -41,10 +41,11 @@ resource "aws_instance" "webserver" {
   vpc_security_group_ids      = var.web_sg_output.*.id
   subnet_id                   = var.subnet_ouput.id
 
+
   provisioner "remote-exec" {
     inline = [
       "sudo yum -y install httpd && sudo systemctl start httpd",
-      "echo '<h1><center>Hello World! - XAUE1LEDWEBSRV0${count.index}</center></h1>' > index.html",
+      "echo '<h1><center>Hello World! - ${self.tags.Name}</center></h1>' > index.html",
       "sudo mv index.html /var/www/html/"
     ]
     connection {
@@ -57,7 +58,8 @@ resource "aws_instance" "webserver" {
   }
   tags = {
     Custodian = "managed-by-terraform"
-    #TODO: Add some logic to the indedx count if it's double digit then don't add in the '0'
-    Name = "XAUE1LEDWEBSRV0${count.index}"
+    # nested terraform if else logic, but it checks if a '0' should be appended or not
+    # ${count.index} starts at 0 so the '9' condition would technically be the 10th server
+    Name = "${count.index}" == 00 ? "XAUE1LEDWEBSRV01" : "${count.index}" >= 9 ? "XAUE1LEDWEBSRV${count.index + 1}" : "XAUE1LEDWEBSRV0${count.index + 1}"
   }
 }
