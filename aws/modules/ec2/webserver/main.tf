@@ -2,6 +2,12 @@
 data "aws_ssm_parameter" "webserver-ami" {
   name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
 }
+# Create key-pair for logging into EC2 in us-east-1
+resource "aws_key_pair" "webserver-key" {
+  key_name = "webserver-key"
+  # folder that contains keys but is under gitignore. terraform/aws/keys
+  public_key = file("${path.root}/keys/id_rsa.pub")
+}
 
 #Create and bootstrap webserver
 resource "aws_instance" "webserver" {
@@ -52,6 +58,6 @@ resource "aws_instance" "webserver" {
   tags = {
     Custodian = "managed-by-terraform"
     #TODO: Add some logic to the indedx count if it's double digit then don't add in the '0'
-    Name      = "XAUE1LEDWEBSRV0${count.index}"
+    Name = "XAUE1LEDWEBSRV0${count.index}"
   }
 }

@@ -12,8 +12,16 @@ data "aws_ami" "windows_2022" {
   owners = ["801119661308"] # AWS owner ID
 }
 
+# Create key-pair for logging into EC2 in us-east-1
+resource "aws_key_pair" "sqlserver-key" {
+  key_name = "sqlserver-key"
+  # folder that contains keys but is under gitignore. terraform/aws/keys
+  public_key = file("${path.root}/keys/id_rsa.pub")
+}
+
 #Create sqlserver
 resource "aws_instance" "sqlserver" {
+  count = 2
   #* HOSTNAME SCHEME
   /*
     #? Total of 17 characters MAX but not all have to be used
@@ -46,6 +54,7 @@ resource "aws_instance" "sqlserver" {
 
   tags = {
     Custodian = "managed-by-terraform"
-    Name      = "XAUE1LIDSQL01"
+    #TODO: Add some logic to the indedx count if it's double digit then don't add in the '0'
+    Name = "XAUE1WIDSQL0${count.index}"
   }
 }
