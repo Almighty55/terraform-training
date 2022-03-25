@@ -1,4 +1,4 @@
-output "sqlserver_publicIP" {
+output "sqlserver_privateIP" {
   # notice how this output is pulled in the root module
-  value = aws_instance.sqlserver[*].public_ip
+  value = aws_instance.sqlserver[*].private_ip
 }
