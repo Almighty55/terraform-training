@@ -12,7 +12,7 @@ else {
 
 Set-Location -Path ..
 # auto approve destroy and hide output since it would error out for saving state file
-terraform destroy --auto-approve >$null 2>&1
+terraform destroy --auto-approve
 if (Test-Path ".terraform") {
     Remove-Item -Path ".terraform" -Recurse -Force
 }

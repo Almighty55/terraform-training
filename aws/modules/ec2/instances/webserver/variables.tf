@@ -1,7 +1,5 @@
 # declare variable to be used in main
-# vpc module
-variable "vpc_output" {}
-variable "subnet_ouput" {}
+variable "public_subnet_output" {}
 
 # sg module
 variable "web_sg_output" {}

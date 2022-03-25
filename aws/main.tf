@@ -6,23 +6,35 @@ module "vpc" {
   source = "./modules/vpc"
 }
 
-module "webserver" {
-  source = "./modules/ec2/webserver"
-  # get the value from the vpc module output to use within webserver module
-  vpc_output    = module.vpc.vpc_output
-  subnet_ouput  = module.vpc.subnet_ouput
-  web_sg_output = module.sg.web_sg_output
-}
-
-module "sql" {
-  source = "./modules/ec2/sql"
-  # get the value from the vpc module output to use within sql module
-  vpc_output    = module.vpc.vpc_output
-  subnet_ouput  = module.vpc.subnet_ouput
-  sql_sg_output = module.sg.sql_sg_output
+module "nat" {
+  source                = "./modules/vpc/nat"
+  igw_output            = module.vpc.igw
+  public_subnet_output  = module.vpc.public_subnet_output
+  private_subnet_output = module.vpc.private_subnet_output
+  vpc_output            = module.vpc.vpc_output
 }
 
 module "sg" {
   source     = "./modules/ec2/sg"
   vpc_output = module.vpc.vpc_output
+}
+
+module "webserver" {
+  source = "./modules/ec2/instances/webserver"
+  # get the value from the vpc module output to use within webserver module
+  public_subnet_output = module.vpc.public_subnet_output
+  web_sg_output        = module.sg.web_sg_output
+}
+
+module "sql" {
+  source = "./modules/ec2/instances/sql"
+  # get the value from the vpc module output to use within sql module
+  private_subnet_output = module.vpc.private_subnet_output
+  sql_sg_output         = module.sg.sql_sg_output
+}
+
+module "jump" {
+  source               = "./modules/ec2/instances/jump"
+  public_subnet_output = module.vpc.public_subnet_output
+  jump_sg_output        = module.sg.jump_sg_output
 }

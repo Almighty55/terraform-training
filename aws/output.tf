@@ -8,3 +8,7 @@ output "webserver_publicIP" {
 output "sqlserver_publicIP" {
   value = module.sql.sqlserver_publicIP
 }
+
+output "jumpserver_publicIP" {
+  value = module.jump.jumpserver_publicIP
+}
