@@ -36,5 +36,5 @@ module "sql" {
 module "jump" {
   source               = "./modules/ec2/instances/jump"
   public_subnet_output = module.vpc.public_subnet_output
-  jump_sg_output        = module.sg.jump_sg_output
+  jump_sg_output       = module.sg.jump_sg_output
 }
