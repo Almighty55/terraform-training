@@ -1,5 +1,11 @@
+# Get Linux AMI ID using SSM Parameter endpoint in us-east-1
+data "aws_ssm_parameter" "webserver-ami" {
+  name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+}
+
 #Create and bootstrap webserver
 resource "aws_instance" "webserver" {
+  count = 2
   #* HOSTNAME SCHEME
   /*
     #? Total of 17 characters MAX but not all have to be used
@@ -32,7 +38,7 @@ resource "aws_instance" "webserver" {
   provisioner "remote-exec" {
     inline = [
       "sudo yum -y install httpd && sudo systemctl start httpd",
-      "echo '<h1><center>Hello World!</center></h1>' > index.html",
+      "echo '<h1><center>Hello World! - XAUE1LEDWEBSRV0${count.index}</center></h1>' > index.html",
       "sudo mv index.html /var/www/html/"
     ]
     connection {
@@ -45,6 +51,7 @@ resource "aws_instance" "webserver" {
   }
   tags = {
     Custodian = "managed-by-terraform"
-    Name      = "XAUE1LEDWEBSRV01"
+    #TODO: Add some logic to the indedx count if it's double digit then don't add in the '0'
+    Name      = "XAUE1LEDWEBSRV0${count.index}"
   }
 }
