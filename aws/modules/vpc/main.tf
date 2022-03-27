@@ -45,7 +45,6 @@ data "aws_availability_zones" "azs" {
 resource "aws_subnet" "public_subnet" {
   availability_zone       = element(data.aws_availability_zones.azs.names, 0)
   vpc_id                  = aws_vpc.dev_vpc.id
-  map_public_ip_on_launch = true
   cidr_block              = "10.0.0.0/24"
   tags = {
     Custodian = "managed-by-terraform"
