@@ -1,0 +1,4 @@
+<powershell>
+$file = "C:\Users\Administrator\Desktop\" + (Get-Date).ToString("MM-dd-yy-hh-mm-ss") + ".txt"
+New-Item $file -ItemType file
+</powershell>
