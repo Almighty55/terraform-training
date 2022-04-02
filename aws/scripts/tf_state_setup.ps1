@@ -5,9 +5,17 @@ try {
         Get-STSCallerIdentity | Out-Null
     }
     catch {
+        Write-host "Getting AWS Creds from A Cloud Guru"
         # once selenium script is finished that should be plugged in here to auto update
-        Update-eAWSCreds
-    } 
+        & "C:/Program Files/Python39/python.exe" "./ACloudGuru_AWS_Sandbox.py"
+    }
+
+    try {
+        Get-STSCallerIdentity | Out-Null
+    }
+    catch {
+        Write-Error "Getting Creds was unsuccesful. Please manually update AWS creds"
+    }
 
     Set-Location -Path ..
     # Get the bucket name and region from the version.tf configuration

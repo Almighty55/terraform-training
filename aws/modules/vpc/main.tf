@@ -43,9 +43,9 @@ data "aws_availability_zones" "azs" {
 
 # Create public subnet # 1 in us-east-1
 resource "aws_subnet" "public_subnet" {
-  availability_zone       = element(data.aws_availability_zones.azs.names, 0)
-  vpc_id                  = aws_vpc.dev_vpc.id
-  cidr_block              = "10.0.0.0/24"
+  availability_zone = element(data.aws_availability_zones.azs.names, 0)
+  vpc_id            = aws_vpc.dev_vpc.id
+  cidr_block        = "10.0.0.0/24"
   tags = {
     Custodian = "managed-by-terraform"
     Name      = "public subnet"
