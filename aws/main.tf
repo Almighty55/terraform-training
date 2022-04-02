@@ -38,3 +38,10 @@ module "jump" {
   public_subnet_output = module.vpc.public_subnet_output
   jump_sg_output       = module.sg.jump_sg_output
 }
+
+# module "juypterhub" {
+#   source                = "./modules/jhub"
+#   vpc_output            = module.vpc.vpc_output
+#   public_subnet_output  = module.vpc.public_subnet_output
+#   private_subnet_output = module.vpc.private_subnet_output
+# }
