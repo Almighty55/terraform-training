@@ -48,20 +48,22 @@ resource "aws_instance" "guac" {
   vpc_security_group_ids      = var.guac_sg_output.*.id
   subnet_id                   = var.public_subnet_output.id
 
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "sudo yum -y install httpd && sudo systemctl start httpd",
-  #     "echo '<h1><center>Hello World! - ${self.tags.Name}</center></h1>' > index.html",
-  #     "sudo mv index.html /var/www/html/"
-  #   ]
-  #   connection {
-  #     type = "ssh"
-  #     user = "ec2-user"
-  #     # private key is provided by a cloud guru, nothing special about this ami/server so no security concern
-  #     private_key = file("${path.root}/keys/id_rsa")
-  #     host        = self.public_ip
-  #   }
-  # }
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get -y update",
+      "sudo apt-get -y install build-essential",
+      "wget https://git.io/fxZq5 -O guac-install.sh",
+      "sudo chmod +x guac-install.sh",
+      "sudo ./guac-install.sh --mysqlpwd password --guacpwd password --nomfa --installmysql"
+    ]
+    connection {
+      type = "ssh"
+      user = "ubuntu"
+      private_key = file("${path.root}/keys/guacKey")
+      host        = self.public_ip
+    }
+  }
+
   tags = {
     Custodian = "managed-by-terraform"
     # nested terraform if else logic, but it checks if a '0' should be appended or not
