@@ -1,4 +1,3 @@
-
 try {
     # test aws creds
     try {
@@ -30,10 +29,14 @@ try {
         #TODO: Add in error handling to catch if the bucket name is conflicting
         #! An error occurred (OperationAborted) when calling the CreateBucket operation: A conflicting conditional operation is currently in progress against this resource. Please try again.
         aws s3api create-bucket --bucket $bucketName --region $region >$null 2>&1
+        aws s3api put-public-access-block --bucket $bucketName --region $region --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true" >$null 2>&1
+        aws s3api put-bucket-versioning --bucket $bucketName --versioning-configuration MFADelete=Disabled,Status=Enabled >$null 2>&1
     }
     else {
         # if anything other than us-east-1 then the location constraint is needed
         aws s3api create-bucket --bucket $bucketName --region $region --create-bucket-configuration LocationConstraint=$region >$null 2>&1
+        aws s3api put-public-access-block --bucket $bucketName --region $region --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true" >$null 2>&1
+        aws s3api put-bucket-versioning --bucket $bucketName --versioning-configuration MFADelete=Disabled,Status=Enabled >$null 2>&1
     }
 
     # cd to the root then run terraform init
