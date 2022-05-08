@@ -11,7 +11,7 @@ resource "aws_key_pair" "webserver-key" {
 
 #Create and bootstrap webserver
 resource "aws_instance" "webserver" {
-  count = 1
+  count = 0
   #* HOSTNAME SCHEME
   /*
     #? Total of 17 characters MAX but not all have to be used

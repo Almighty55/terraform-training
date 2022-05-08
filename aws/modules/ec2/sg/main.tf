@@ -47,6 +47,48 @@ resource "aws_security_group_rule" "web_srv_sgr" {
 }
 
 
+locals {
+  guac_srv_csv = csvdecode(file("${path.module}/csv/guac_server.csv"))
+  guac_srv_data = flatten([
+    for sg_rule in local.guac_srv_csv : {
+      description = sg_rule.Description
+      type        = sg_rule.Type
+      cidr_blocks = split(",", sg_rule.CIDR)
+      protocol    = sg_rule.Protocol
+      from_port   = sg_rule.From_port
+      to_port     = sg_rule.To_port
+      description = sg_rule.Description
+    }
+  ])
+}
+resource "aws_security_group" "guac_srv_sg" {
+  name        = "guac-server"
+  description = "guac server security group"
+  vpc_id      = var.vpc_output.id
+  tags = {
+    Custodian = "managed-by-terraform"
+  }
+  lifecycle {
+    # create a new sg in the event this one needs to be modified
+    create_before_destroy = true
+  }
+}
+resource "aws_security_group_rule" "guac_srv_sgr" {
+  count             = length(local.guac_srv_data)
+  security_group_id = aws_security_group.guac_srv_sg.id
+  type              = local.guac_srv_data[count.index].type
+  cidr_blocks       = local.guac_srv_data[count.index].cidr_blocks
+  protocol          = local.guac_srv_data[count.index].protocol
+  from_port         = local.guac_srv_data[count.index].from_port
+  to_port           = local.guac_srv_data[count.index].to_port
+  description       = "${local.guac_srv_data[count.index].description} - managed-by-terraform"
+
+  lifecycle {
+    # create a new sgr in the event this one needs to be modified
+    create_before_destroy = true
+  }
+}
+
 
 locals {
   sql_srv_csv = csvdecode(file("${path.module}/csv/sql_server.csv"))

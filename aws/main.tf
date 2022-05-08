@@ -26,6 +26,13 @@ module "webserver" {
   web_sg_output        = module.sg.web_sg_output
 }
 
+module "guacamole" {
+  source = "./modules/ec2/instances/guacamole"
+  # get the value from the vpc module output to use within guacamole module
+  public_subnet_output = module.vpc.public_subnet_output
+  guac_sg_output        = module.sg.guac_sg_output
+}
+
 module "sql" {
   source = "./modules/ec2/instances/sql"
   # get the value from the vpc module output to use within sql module

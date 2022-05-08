@@ -5,6 +5,10 @@ output "webserver_publicIP" {
   #value = format("%s/%s","custom text","${module.webserver.webserver_publicIP}")
 }
 
+output "guac_publicIP" {
+  value = module.guacamole.guac_publicIP
+}
+
 output "sqlserver_privateIP" {
   value = module.sql.sqlserver_privateIP
 }

@@ -1,26 +1,23 @@
-/* helpful commands
-  get ami id off arn build
-  aws imagebuilder get-image --image-build-version-arn "arn:aws:imagebuilder:us-east-1:aws:image/windows-server-2022-english-full-base-x86/2022.3.9"
-  get owner ID
-  aws ec2 describe-images --image-ids "ami-09a4a092e0d0ed511" --region us-east-1 */
-data "aws_ami" "windows_2022" {
+# Get Linux AMI ID using SSM Parameter endpoint in us-east-1
+data "aws_ami" "ubuntu" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["Windows_Server-2019-English-Full-Base-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
-  owners = ["801119661308"] # AWS owner ID
+  owners = ["099720109477"] # Ubuntu owner ID
 }
 
-# Create key-pair for logging into EC2 in us-east-1
-resource "aws_key_pair" "sqlserver-key" {
-  key_name = "sqlserver-key"
+# # Create key-pair for logging into EC2 in us-east-1
+resource "aws_key_pair" "guacKey" {
+  key_name = "guacKey"
   # folder that contains keys but is under gitignore. terraform/aws/keys
-  public_key = file("${path.root}/keys/id_rsa.pub")
+  # ssh-keygen.exe -t rsa -b 2048
+  public_key = file("${path.root}/keys/guacKey.pub")
 }
 
-#Create sqlserver
-resource "aws_instance" "sqlserver" {
+#Create and bootstrap webserver
+resource "aws_instance" "guac" {
   count = 1
   #* HOSTNAME SCHEME
   /*
@@ -44,18 +41,31 @@ resource "aws_instance" "sqlserver" {
     #*   Next 2 characters designates the server number or version starting at "01"
           Example: XAUE1LDISQL01, XAUE1LDISQL02, XAUE1LDEWEBSRV01, XAUE1LDEWEBSRV02*/
 
-  ami                         = data.aws_ami.windows_2022.id
+  ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t3.medium"
-  key_name                    = aws_key_pair.sqlserver-key.key_name
-  associate_public_ip_address = false
-  vpc_security_group_ids      = [var.sql_sg_output.id]
-  subnet_id                   = var.private_subnet_output.id
-  user_data                   = "${path.module}/build_script.txt"
+  key_name                    = aws_key_pair.guacKey.key_name
+  associate_public_ip_address = true
+  vpc_security_group_ids      = var.guac_sg_output.*.id
+  subnet_id                   = var.public_subnet_output.id
 
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "sudo yum -y install httpd && sudo systemctl start httpd",
+  #     "echo '<h1><center>Hello World! - ${self.tags.Name}</center></h1>' > index.html",
+  #     "sudo mv index.html /var/www/html/"
+  #   ]
+  #   connection {
+  #     type = "ssh"
+  #     user = "ec2-user"
+  #     # private key is provided by a cloud guru, nothing special about this ami/server so no security concern
+  #     private_key = file("${path.root}/keys/id_rsa")
+  #     host        = self.public_ip
+  #   }
+  # }
   tags = {
     Custodian = "managed-by-terraform"
     # nested terraform if else logic, but it checks if a '0' should be appended or not
     # ${count.index} starts at 0 so the '9' condition would technically be the 10th server
-    Name = "${count.index}" == 00 ? "XAUE1WIDSQL01" : "${count.index}" >= 9 ? "XAUE1WIDSQL${count.index + 1}" : "XAUE1WIDSQL0${count.index + 1}"
+    Name = "${count.index}" == 00 ? "XAUE1LEDGUACSRV01" : "${count.index}" >= 9 ? "XAUE1LEDGUACSRV${count.index + 1}" : "XAUE1LEDGUACSRV0${count.index + 1}"
   }
 }
