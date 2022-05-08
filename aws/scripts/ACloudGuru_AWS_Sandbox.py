@@ -48,13 +48,15 @@ time.sleep(2)
 
 # Open AWS Sandbox
 try:
-    start_AWS = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="rc-tabs-0-panel-cloud-sandboxes"]/div[1]/div[2]/div/div/div/div/div/button/span')))
+    start_AWS = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="tabs-4--tabpanel-0"]/div[1]/div[2]/div/div/div/div/div/button/span')))
+    //*[@id="tabs-4--tabpanel-0"]/div[1]/div[2]/div/div/div/div/div/button
     start_AWS.click()
 except:
     pass
     
 try:
     # Access Key ID
+    #! XPATH's changed need to fix
     access_key_id_copy = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="rc-tabs-0-panel-cloud-sandboxes"]/div/div[1]/div[2]/div[3]/div[4]/div[2]/div')))
     access_key_id_copy.click()
     access_key_id = run_Powershell(get_clipboard)
