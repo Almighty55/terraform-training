@@ -13,10 +13,6 @@ output "sqlserver_privateIP" {
   value = module.sql.sqlserver_privateIP
 }
 
-output "sqlserver_pwd_decrypted" {
-  value = module.sql.sqlserver_pwd_decrypted
-}
-
 output "jumpserver_publicIP" {
   value = module.jump.jumpserver_publicIP
 }
