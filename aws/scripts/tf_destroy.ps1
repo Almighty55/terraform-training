@@ -25,6 +25,9 @@ if (Test-Path ".terraform.lock.hcl") {
 if (Test-Path "terraform.tfstate") {
     Remove-Item -Path "terraform.tfstate" -Recurse -Force
 }
+if (Test-Path ".infracost") {
+    Remove-Item -Path ".infracost" -Recurse -Force
+}
 
 # purge aws creds
 $accessKeyID = ""
