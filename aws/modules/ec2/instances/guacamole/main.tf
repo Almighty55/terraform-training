@@ -38,6 +38,7 @@ resource "aws_instance" "guac" {
     }
   }
   #! handle multiple sql servers being added to guacamole, right now I am pulling out the first index of the tuple, but it should be dynamic
+  #! get this to trigger on any changes to sql server and add in jump server config
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get -y update",
