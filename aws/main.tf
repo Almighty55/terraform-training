@@ -29,8 +29,10 @@ module "webserver" {
 module "guacamole" {
   source = "./modules/ec2/instances/guacamole"
   # get the value from the vpc module output to use within guacamole module
-  public_subnet_output = module.vpc.public_subnet_output
-  guac_sg_output       = module.sg.guac_sg_output
+  public_subnet_output    = module.vpc.public_subnet_output
+  guac_sg_output          = module.sg.guac_sg_output
+  sqlserver_privateIP     = module.sql.sqlserver_privateIP
+  sqlserver_pwd_decrypted = module.sql.sqlserver_pwd_decrypted
 }
 
 module "sql" {

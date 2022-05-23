@@ -1,0 +1,5 @@
+#!/bin/bash
+privateIP=$1
+pw=$2;
+
+mysql -u guacamole_user -ppassword -e"USE guacamole_db;INSERT INTO guacamole_connection(connection_name,protocol) Values ('SQL_Server','rdp');INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','ignore-cert','true');INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','port','3389');INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','security','nla');INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','username','Administrator');INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','hostname','$1');INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','password','$2');"

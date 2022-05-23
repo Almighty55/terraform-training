@@ -16,30 +16,9 @@ resource "aws_key_pair" "guacKey" {
   public_key = file("${path.root}/keys/guacKey.pub")
 }
 
-#Create and bootstrap webserver
+#Create apache guacamole server
 resource "aws_instance" "guac" {
   count = 1
-  #* HOSTNAME SCHEME
-  /*
-    #? Total of 17 characters MAX but not all have to be used
-    #? Note: Domain and company are interchangeble for character limits
-    #*  First character designates the domain
-          Example: S (silly.net), B (boom.net), X (not bound to a domain)
-    #*  First 2 characters designates company 
-          Example: A (Almighty LLC), G (Google), Bank of America (BA)
-    #*  Next 3 characters designates location either office location for prem or region for cloud
-          Example: C1 (Chicago first office), C2 (Chicago second office), UW2 (us-west-2), UE1 (us-east-1)
-    #*  Next 1 character designates OS
-          Example: W (windows), L (linux), M (macOS), E (embedded firmware)
-    #*  Next 1 character designates internal or external connections
-          Example: I (internal), E (external)
-    #*  Next 1 character designates service level environment
-          Example: P (Production), D (Development), T (Testing), U (User Acceptance Testing "UAT"), S (Staging)
-    #*   Next 6 characters designates device function
-          Example: TS (TermServ), WEBSRV (Website Server), DC (Domain Controller), SQL (SQL Server), FIREWL (Firewall), BAKSRV (Backup Server)
-                  APPSRV (Application Server), FS (File Share), HYPVIS (Hypervisor)
-    #*   Next 2 characters designates the server number or version starting at "01"
-          Example: XAUE1LDISQL01, XAUE1LDISQL02, XAUE1LDEWEBSRV01, XAUE1LDEWEBSRV02*/
 
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t3.medium"
@@ -48,21 +27,38 @@ resource "aws_instance" "guac" {
   vpc_security_group_ids      = var.guac_sg_output.*.id
   subnet_id                   = var.public_subnet_output.id
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get -y update",
-      "sudo apt-get -y install build-essential",
-      "wget https://git.io/fxZq5 -O guac-install.sh",
-      "sudo chmod +x guac-install.sh",
-      "sudo ./guac-install.sh --mysqlpwd password --guacpwd password --nomfa --installmysql"
-    ]
+  provisioner "file" {
+    source      = "${path.module}/import_connections.sh"
+    destination = "import_connections.sh"
     connection {
-      type = "ssh"
-      user = "ubuntu"
+      type        = "ssh"
+      user        = "ubuntu"
       private_key = file("${path.root}/keys/guacKey")
       host        = self.public_ip
     }
   }
+  #! handle multiple sql servers being added to guacamole, right now I am pulling out the first index of the tuple, but it should be dynamic
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get -y update",
+      "sudo apt-get -y install build-essential",
+      "sudo apt-get -y upgrade",
+      "wget https://git.io/fxZq5 -O guac-install.sh",
+      "sudo chmod +x guac-install.sh",
+      "sudo chmod +x import_connections.sh",
+      "sudo ./guac-install.sh --mysqlpwd password --guacpwd password --nomfa --installmysql",
+      "sudo ./import_connections.sh '${var.sqlserver_privateIP[0]}' '${var.sqlserver_pwd_decrypted[0]}'"
+      # "mysql -u guacamole_user -ppassword -e 'USE guacamole_db; INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','hostname','${var.sqlserver_privateIP[0]}');'",
+      # "mysql -u guacamole_user -ppassword -e 'USE guacamole_db; INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','password','${var.sqlserver_pwd_decrypted[0]}');'"
+    ]
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("${path.root}/keys/guacKey")
+      host        = self.public_ip
+    }
+  }
+
 
   tags = {
     Custodian = "managed-by-terraform"
@@ -71,3 +67,21 @@ resource "aws_instance" "guac" {
     Name = "${count.index}" == 00 ? "XAUE1LEDGUACSRV01" : "${count.index}" >= 9 ? "XAUE1LEDGUACSRV${count.index + 1}" : "XAUE1LEDGUACSRV0${count.index + 1}"
   }
 }
+
+# resource "aws_ebs_volume" "guac_volume" {
+#   availability_zone = aws_instance.guac.availability_zone[count.index]
+#   size              = 100
+#   tags = {
+#     Custodian = "managed-by-terraform"
+#     Name      = "guac-volume"
+#   }
+#   depends_on = [
+#     aws_instance.guac
+#   ]
+# }
+
+# resource "aws_volume_attachment" "ebs_guac" {
+#   device_name = "/dev/sdh"
+#   volume_id   = aws_ebs_volume.guac_volume.id
+#   instance_id = aws_instance.guac.id[count.index]
+# }

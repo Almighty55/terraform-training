@@ -7,7 +7,7 @@ data "aws_ami" "windows_2022" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["Windows_Server-2019-English-Full-Base-*"]
+    values = ["Windows_Server-2022-English-Full-Base-*"]
   }
   owners = ["801119661308"] # AWS owner ID
 }
@@ -51,6 +51,7 @@ resource "aws_instance" "sqlserver" {
   vpc_security_group_ids      = [var.sql_sg_output.id]
   subnet_id                   = var.private_subnet_output.id
   user_data                   = "${path.module}/build_script.txt"
+  get_password_data           = "true"
 
   tags = {
     Custodian = "managed-by-terraform"
