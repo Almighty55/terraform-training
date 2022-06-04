@@ -1,6 +1,6 @@
 terraform {
   # specify terraform version
-  required_version = "~> 1.1.7"
+  required_version = "~> 1.2.2"
   # declare provider and settings
   required_providers {
     aws = {
