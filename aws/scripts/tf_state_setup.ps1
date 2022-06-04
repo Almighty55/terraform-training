@@ -6,17 +6,29 @@ try {
     catch {
         Write-host "Getting AWS Creds from A Cloud Guru"
         # once selenium script is finished that should be plugged in here to auto update
-        & "C:/Program Files/Python39/python.exe" "./ACloudGuru_AWS_Sandbox.py"
-    }
+        # & "C:/Program Files/Python39/python.exe" "./ACloudGuru_AWS_Sandbox.py"
 
-    try {
-        Get-STSCallerIdentity | Out-Null
-    }
-    catch {
-        Write-Error "Getting Creds was unsuccesful. Please manually update AWS creds"
+        try {
+            Get-STSCallerIdentity | Out-Null
+        }
+        catch {
+            Write-Error "Getting Creds was unsuccesful. Please manually update AWS creds"
+        }
     }
 
     Set-Location -Path ..
+
+    $leftOvers = @( ".terraform",
+                    "errored.tfstate",
+                    ".terraform.lock.hcl",
+                    "terraform.tfstate",
+                    ".infracost")
+    foreach ($path in $leftOvers) {
+        if (Test-Path -Path $path) {
+            Remove-Item -Path $path -Recurse -Force
+        }
+    }
+
     # Get the bucket name and region from the version.tf configuration
     $tfBucket = Get-Content -Path "version.tf" | Select-String "bucket" | Select-Object -ExpandProperty line
     $bucketname = ([regex]::match($tfBucket, '(?<=")(?:\\.|[^"\\])*(?=")')).Value

@@ -18,8 +18,6 @@ resource "aws_key_pair" "guacKey" {
 
 #Create apache guacamole server
 resource "aws_instance" "guac" {
-  count = 1
-
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t3.medium"
   key_name                    = aws_key_pair.guacKey.key_name
@@ -60,12 +58,9 @@ resource "aws_instance" "guac" {
     }
   }
 
-
   tags = {
     Custodian = "managed-by-terraform"
-    # nested terraform if else logic, but it checks if a '0' should be appended or not
-    # ${count.index} starts at 0 so the '9' condition would technically be the 10th server
-    Name = "${count.index}" == 00 ? "XAUE1LEDGUACSRV01" : "${count.index}" >= 9 ? "XAUE1LEDGUACSRV${count.index + 1}" : "XAUE1LEDGUACSRV0${count.index + 1}"
+    Name = "XAUE1LEDGUACSRV01"
   }
 }
 

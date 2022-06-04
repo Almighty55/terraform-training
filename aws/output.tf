@@ -6,7 +6,8 @@ output "webserver_publicIP" {
 }
 
 output "guac_publicIP" {
-  value = module.guacamole.guac_publicIP
+  #value = format("%s/%s",module.guacamole.guac_publicIP,":8080/guacamole")
+  value = "http://${module.guacamole.guac_publicIP}:8080/guacamole"
 }
 
 output "sqlserver_privateIP" {

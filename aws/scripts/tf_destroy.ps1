@@ -11,22 +11,19 @@ else {
 }
 
 Set-Location -Path ..
-# auto approve destroy and hide output since it would error out for saving state file
-terraform destroy --auto-approve
-if (Test-Path ".terraform") {
-    Remove-Item -Path ".terraform" -Recurse -Force
-}
-if (Test-Path "errored.tfstate") {
-    Remove-Item -Path "errored.tfstate" -Recurse -Force
-}
-if (Test-Path ".terraform.lock.hcl") {
-    Remove-Item -Path ".terraform.lock.hcl" -Recurse -Force
-}
-if (Test-Path "terraform.tfstate") {
-    Remove-Item -Path "terraform.tfstate" -Recurse -Force
-}
-if (Test-Path ".infracost") {
-    Remove-Item -Path ".infracost" -Recurse -Force
+# auto approve destroy 
+Invoke-Expression -Command "terraform destroy --auto-approve"
+
+#clean up any left over files
+$leftOvers = @( ".terraform",
+                "errored.tfstate",
+                ".terraform.lock.hcl",
+                "terraform.tfstate",
+                ".infracost")
+foreach ($path in $leftOvers) {
+    if (Test-Path -Path $path) {
+        Remove-Item -Path $path -Recurse -Force
+    }
 }
 
 # purge aws creds
