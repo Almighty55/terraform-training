@@ -60,7 +60,7 @@ resource "aws_instance" "guac" {
 
   tags = {
     Custodian = "managed-by-terraform"
-    Name = "XAUE1LEDGUACSRV01"
+    Name      = "XAUE1LEDGUACSRV01"
   }
 }
 
