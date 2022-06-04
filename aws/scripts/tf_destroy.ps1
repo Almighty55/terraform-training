@@ -10,7 +10,10 @@ else {
     exit
 }
 
+# move to the proper directory and retain their current directory
+Push-Location -Path (Split-Path $MyInvocation.MyCommand.Path)
 Set-Location -Path ..
+
 # auto approve destroy 
 Invoke-Expression -Command "terraform destroy --auto-approve"
 
@@ -33,5 +36,5 @@ $newCreds = @("[default]", "aws_access_key_id = $accessKeyID", "aws_secret_acces
 #Set-Content -path "C:\Users\$env:USERNAME\.aws\credentials" -Value $newCreds
   
 Write-Host -BackgroundColor Black -ForegroundColor Yellow "WARNING: Terraform backend has been destroyed.`nPlease run tf_state_setup.ps1 to setup backend again."
-# back into the script directory
-Set-Location -Path -
+# back into their start directory
+Pop-Location
