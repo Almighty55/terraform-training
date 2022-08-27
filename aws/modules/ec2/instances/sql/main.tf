@@ -21,7 +21,7 @@ resource "aws_key_pair" "sqlserver-key" {
 
 #Create sqlserver
 resource "aws_instance" "sqlserver" {
-  count = 1
+  count = 2
   #* HOSTNAME SCHEME
   /*
     #? Total of 17 characters MAX but not all have to be used

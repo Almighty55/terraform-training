@@ -24,7 +24,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption_tfstat
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public_tfstate" {
-  bucket = aws_s3_bucket.tfstate_bucket.id
+  bucket              = aws_s3_bucket.tfstate_bucket.id
   block_public_acls   = true
   block_public_policy = true
 }

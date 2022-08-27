@@ -16,6 +16,26 @@ resource "aws_key_pair" "guacKey" {
   public_key = file("${path.root}/keys/guacKey.pub")
 }
 
+locals {
+  connections = [for i in range(length(var.sqlserver_privateIP)) : {
+    ip        = var.sqlserver_privateIP[i]
+    decrypted = var.sqlserver_pwd_decrypted[i]
+  }]
+
+  tmpl = <<-EOT
+    %{for c in local.connections~}*Connection*
+    ${c.ip}
+    ${c.decrypted}
+
+    %{endfor~}
+  EOT
+}
+
+resource "local_file" "foo" {
+  content  = local.tmpl
+  filename = "${path.module}/private_ips.txt"
+}
+
 #Create apache guacamole server
 resource "aws_instance" "guac" {
   ami                         = data.aws_ami.ubuntu.id
@@ -25,18 +45,18 @@ resource "aws_instance" "guac" {
   vpc_security_group_ids      = var.guac_sg_output.*.id
   subnet_id                   = var.public_subnet_output.id
 
-  provisioner "file" {
-    source      = "${path.module}/import_connections.sh"
-    destination = "import_connections.sh"
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = file("${path.root}/keys/guacKey")
-      host        = self.public_ip
-    }
+  tags = {
+    Custodian = "managed-by-terraform"
+    Name      = "XAUE1LEDGUACSRV01"
   }
-  #! handle multiple sql servers being added to guacamole, right now I am pulling out the first index of the tuple, but it should be dynamic
-  #! get this to trigger on any changes to sql server and add in jump server config
+}
+
+#TODO grab the data from local.tmpl and build a new import_connections script that can handle that format
+#TODO get this to trigger on any changes to sql server and add in jump server config
+resource "null_resource" "guac_setup"{
+    triggers {
+      version = "${timestamp()}" 
+    }
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get -y update",
@@ -47,20 +67,13 @@ resource "aws_instance" "guac" {
       "sudo chmod +x import_connections.sh",
       "sudo ./guac-install.sh --mysqlpwd password --guacpwd password --nomfa --installmysql",
       "sudo ./import_connections.sh '${var.sqlserver_privateIP[0]}' '${var.sqlserver_pwd_decrypted[0]}'"
-      # "mysql -u guacamole_user -ppassword -e 'USE guacamole_db; INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','hostname','${var.sqlserver_privateIP[0]}');'",
-      # "mysql -u guacamole_user -ppassword -e 'USE guacamole_db; INSERT INTO guacamole_connection_parameter(connection_id,parameter_name,parameter_value) Values ('1','password','${var.sqlserver_pwd_decrypted[0]}');'"
     ]
     connection {
       type        = "ssh"
       user        = "ubuntu"
       private_key = file("${path.root}/keys/guacKey")
-      host        = self.public_ip
+      host        = aws_instance.guac.public_ip
     }
-  }
-
-  tags = {
-    Custodian = "managed-by-terraform"
-    Name      = "XAUE1LEDGUACSRV01"
   }
 }
 

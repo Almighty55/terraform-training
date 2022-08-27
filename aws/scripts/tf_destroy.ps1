@@ -17,6 +17,14 @@ Set-Location -Path ..
 # auto approve destroy 
 Invoke-Expression -Command "terraform destroy --auto-approve"
 
+# Get the bucket name and region from the version.tf configuration
+$tfBucket = Get-Content -Path "version.tf" | Select-String "bucket" | Select-Object -ExpandProperty line
+$bucketname = ([regex]::match($tfBucket, '(?<=")(?:\\.|[^"\\])*(?=")')).Value
+
+aws s3 rm "s3://$bucketname" --recursive
+aws s3 rb "s3://$bucketname" --force >$null 2>&1
+aws s3api delete-bucket --bucket $bucketname
+
 #clean up any left over files
 $leftOvers = @( ".terraform",
                 "errored.tfstate",
