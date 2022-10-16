@@ -49,23 +49,23 @@ resource "aws_instance" "guac" {
     Custodian = "managed-by-terraform"
     Name      = "XAUE1LEDGUACSRV01"
   }
-}
 
-#TODO grab the data from local.tmpl and build a new import_connections script that can handle that format
-#TODO get this to trigger on any changes to sql server and add in jump server config
-resource "null_resource" "guac_setup"{
-    triggers {
-      version = "${timestamp()}" 
+  provisioner "file" {
+    source      = "${path.module}/import_connections.sh"
+    destination = "import_connections.sh"
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file("${path.root}/keys/guacKey")
+      host        = self.public_ip
     }
+  }
+
+  #TODO grab the data from local.tmpl and build a new import_connections script that can handle that format
+  #TODO get this to trigger on any changes to sql server and add in jump server config
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get -y update",
-      "sudo apt-get -y install build-essential",
-      "sudo apt-get -y upgrade",
-      "wget https://git.io/fxZq5 -O guac-install.sh",
-      "sudo chmod +x guac-install.sh",
       "sudo chmod +x import_connections.sh",
-      "sudo ./guac-install.sh --mysqlpwd password --guacpwd password --nomfa --installmysql",
       "sudo ./import_connections.sh '${var.sqlserver_privateIP[0]}' '${var.sqlserver_pwd_decrypted[0]}'"
     ]
     connection {
