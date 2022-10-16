@@ -42,12 +42,6 @@ module "sql" {
   sql_sg_output         = module.sg.sql_sg_output
 }
 
-module "jump" {
-  source               = "./modules/ec2/instances/jump"
-  public_subnet_output = module.vpc.public_subnet_output
-  jump_sg_output       = module.sg.jump_sg_output
-}
-
 # module "juypterhub" {
 #   source                = "./modules/jhub"
 #   vpc_output            = module.vpc.vpc_output

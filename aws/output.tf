@@ -13,7 +13,3 @@ output "guac_publicIP" {
 output "sqlserver_privateIP" {
   value = module.sql.sqlserver_privateIP
 }
-
-output "jumpserver_publicIP" {
-  value = module.jump.jumpserver_publicIP
-}
