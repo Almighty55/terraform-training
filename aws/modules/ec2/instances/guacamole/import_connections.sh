@@ -60,7 +60,12 @@ VALUES      ('$count','drive-path','/mnt/GuacShare');
 
 INSERT INTO $table
             (connection_id,parameter_name,parameter_value)
-VALUES      ('$count','enable-drive','true');"
+VALUES      ('$count','enable-drive','true');
+
+INSERT INTO $table
+            (connection_id,parameter_name,parameter_value)
+VALUES      ('$count','resize-method ','display-update');"
+
 
 # for c in "${privateIP[@]}"
 # do
