@@ -15,7 +15,7 @@ privateIP=$1
 pw=$2;
 count=1;
 database=guacamole_db;
-table=guacamole_connection;
+table=guacamole_connection_parameter;
 
 mysql -u guacamole_user -ppassword -e "USE $database;
 INSERT INTO guacamole_connection
