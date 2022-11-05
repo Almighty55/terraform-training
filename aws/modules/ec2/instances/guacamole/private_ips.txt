@@ -1,8 +1,0 @@
-*Connection*
-10.0.1.129
-63-2RYMZ=9eQh8n@BG&01oiQor.3XcaA
-
-*Connection*
-10.0.1.220
-YJog.&pyr3YJV3Qiag@j.8gW&U2mPcFE
-
