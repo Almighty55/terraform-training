@@ -14,3 +14,7 @@ output "public_subnet_output" {
 output "private_subnet_output" {
   value = aws_subnet.private_subnet
 }
+
+output "private_subnet2_output" {
+  value = aws_subnet.private_subnet2
+}

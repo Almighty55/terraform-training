@@ -64,10 +64,11 @@ try {
     }
     else{
         Write-Warning "'$bucketname' is not available!`nPlease use a different name and verify it is available:`nTest-S3Bucket 'bucketname'"
+        # back into their start directory
+        Pop-Location
         exit
     }
     
-
     # cd to the root then run terraform init
     terraform init
     terraform apply --auto-approve
@@ -75,6 +76,8 @@ try {
     Pop-Location
 }
 catch {
+    # back into their start directory
+    Pop-Location
     Write-Warning "There was an error with the setup, please make sure the following are valid:
     1. bucketname
     2. region

@@ -13,14 +13,14 @@ data "aws_ami" "windows_2022" {
 }
 
 # Create key-pair for logging into EC2 in us-east-1
-resource "aws_key_pair" "sqlserver-key" {
-  key_name = "sqlserver-key"
+resource "aws_key_pair" "jump-key" {
+  key_name = "jump-key"
   # folder that contains keys but is under gitignore. terraform/aws/keys
   public_key = file("${path.root}/keys/id_rsa.pub")
 }
 
 #Create sqlserver
-resource "aws_instance" "sqlserver" {
+resource "aws_instance" "jump" {
   count = 1
   #* HOSTNAME SCHEME
   /*
@@ -45,41 +45,18 @@ resource "aws_instance" "sqlserver" {
           Example: XAUE1LDISQL01, XAUE1LDISQL02, XAUE1LDEWEBSRV01, XAUE1LDEWEBSRV02*/
   ami                         = data.aws_ami.windows_2022.id
   instance_type               = "t3.medium"
-  key_name                    = aws_key_pair.sqlserver-key.key_name
-  associate_public_ip_address = false
-  vpc_security_group_ids      = [var.sql_sg_output.id]
-  subnet_id                   = var.private_subnet_output.id
-  user_data                   = "${path.module}/build_script.txt"
-  # user_data         = <<EOF
-  # <powershell>
-  # Set-DnsClientServerAddress -InterfaceAlias  "Ethernet" -ServerAddresses ("${sort(var.aws_managed_ad_output.dns_ip_addresses)[0]}","${sort(var.aws_managed_ad_output.dns_ip_addresses)[1]}")
-  # Add-Computer -DomainName ${var.aws_managed_ad_output.name} -Credential (New-Object -TypeName PSCredential -ArgumentList "Admin",(ConvertTo-SecureString -String 'Sup3rS3cr3tP@ssw0rd' -AsPlainText -Force)[0])
-  # New-Item -Path $env:USERPROFILE\Desktop\test.txt
-
-  # Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" -Value 0
-  # Restart-Service wuauserv
-  # Install-WindowsFeature -Name "RSAT-AD-PowerShell" -IncludeAllSubFeature
-  # Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "UseWUServer" -Value 1
-  # Restart-Service wuauserv
-
-  # $password = ConvertTo-SecureString -String "Sup3rS3cr3tP@ssw0rd" -AsPlainText -Force
-  # $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "testAD\Admin", $password
-
-  # $suppliedArgs = '-noprofile -command "Import-Module -Name ActiveDirectory;
-  # New-ADUser -Name "TestUser" -Accountpassword (ConvertTo-SecureString -String "Sup3rS3cr3tP@ssw0rd" -AsPlainText -Force) -Enabled $true"'
-  # Start-Process powershell.exe -Credential $cred -WindowStyle Hidden -ArgumentList $suppliedArgs -RedirectStandardOutput $env:USERPROFILE\Desktop\log.txt -RedirectStandardError $env:USERPROFILE\Desktop\log_error.txt
-
-  # $suppliedArgs = '-noprofile -command "Get-ADUser TestUser"'
-  # Start-Process powershell.exe -Credential $cred -WindowStyle Hidden -ArgumentList $suppliedArgs -RedirectStandardOutput $env:USERPROFILE\Desktop\log.txt -RedirectStandardError $env:USERPROFILE\Desktop\log_error.txt
-  # </powershell>
-  # EOF
+  key_name                    = aws_key_pair.jump-key.key_name
+  associate_public_ip_address = true
+  vpc_security_group_ids      = var.jump_sg_output.*.id
+  subnet_id                   = var.public_subnet_output.id
+  #   user_data                   = "${path.module}/build_script.txt"
   get_password_data = "true"
 
   tags = {
     Custodian = "managed-by-terraform"
     # nested terraform if else logic, but it checks if a '0' should be appended or not
     # ${count.index} starts at 0 so the '9' condition would technically be the 10th server
-    Name = "${count.index}" == 00 ? "XAUE1WIDSQL01" : "${count.index}" >= 9 ? "XAUE1WIDSQL${count.index + 1}" : "XAUE1WIDSQL0${count.index + 1}"
+    Name = "${count.index}" == 00 ? "XAUE1WIDJUMP01" : "${count.index}" >= 9 ? "XAUE1WIDJUMP${count.index + 1}" : "XAUE1WIDJUMP0${count.index + 1}"
   }
 
   # depends_on = [

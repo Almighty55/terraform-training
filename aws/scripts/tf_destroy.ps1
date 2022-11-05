@@ -2,13 +2,13 @@ $title    = "Reset Terraform Backend"
 $question = "This script will delete your backend bucket and reset your tf environemnt.`nAre you sure you want to proceed?"
 $choices  = @('&Yes', '&No')
 
-$decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-if ($decision -eq 0) {
-    Write-Host "confirmed"
-}
-else {
-    exit
-}
+# $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
+# if ($decision -eq 0) {
+#     Write-Host "confirmed"
+# }
+# else {
+#     exit
+# }
 
 # move to the proper directory and retain their current directory
 Push-Location -Path (Split-Path $MyInvocation.MyCommand.Path)

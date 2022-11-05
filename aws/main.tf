@@ -1,5 +1,5 @@
 module "backend" {
-  source = "./modules/backend"
+  source     = "./modules/backend"
 }
 
 module "vpc" {
@@ -7,16 +7,24 @@ module "vpc" {
 }
 
 module "nat" {
-  source                = "./modules/vpc/nat"
-  igw_output            = module.vpc.igw
-  public_subnet_output  = module.vpc.public_subnet_output
-  private_subnet_output = module.vpc.private_subnet_output
-  vpc_output            = module.vpc.vpc_output
+  source                 = "./modules/vpc/nat"
+  igw_output             = module.vpc.igw
+  public_subnet_output   = module.vpc.public_subnet_output
+  private_subnet_output  = module.vpc.private_subnet_output
+  private_subnet2_output = module.vpc.private_subnet2_output
+  vpc_output             = module.vpc.vpc_output
 }
 
 module "sg" {
   source     = "./modules/ec2/sg"
   vpc_output = module.vpc.vpc_output
+}
+
+module "ad" {
+  source                 = "./modules/AD"
+  vpc_output             = module.vpc.vpc_output
+  private_subnet_output  = module.vpc.private_subnet_output
+  private_subnet2_output = module.vpc.private_subnet2_output
 }
 
 module "webserver" {
@@ -35,11 +43,19 @@ module "guacamole" {
   sqlserver_pwd_decrypted = module.sql.sqlserver_pwd_decrypted
 }
 
+module "jump" {
+  source = "./modules/ec2/instances/jump"
+  # get the value from the vpc module output to use within jump module
+  public_subnet_output = module.vpc.public_subnet_output
+  jump_sg_output       = module.sg.jump_sg_output
+}
+
 module "sql" {
   source = "./modules/ec2/instances/sql"
   # get the value from the vpc module output to use within sql module
   private_subnet_output = module.vpc.private_subnet_output
   sql_sg_output         = module.sg.sql_sg_output
+  aws_managed_ad_output = module.ad.aws_managed_ad_output
 }
 
 # module "juypterhub" {

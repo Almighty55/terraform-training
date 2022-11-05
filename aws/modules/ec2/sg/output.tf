@@ -9,3 +9,7 @@ output "guac_sg_output" {
 output "sql_sg_output" {
   value = aws_security_group.sql_srv_sg
 }
+
+output "jump_sg_output" {
+  value = aws_security_group.jump_srv_sg
+}

@@ -1,0 +1,2 @@
+principal_name,samaccountname,container
+testuser,testuser,"CN=Users,DC=testAD,DC=local"

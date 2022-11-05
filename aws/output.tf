@@ -13,3 +13,11 @@ output "guac_publicIP" {
 output "sqlserver_privateIP" {
   value = module.sql.sqlserver_privateIP
 }
+
+output "jump_publicP" {
+  value = module.jump.jump_publicIP
+}
+
+output "jump_pwd_decrypted" {
+  value = module.jump.jump_pwd_decrypted
+}

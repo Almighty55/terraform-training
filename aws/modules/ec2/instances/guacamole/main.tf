@@ -31,7 +31,7 @@ locals {
   EOT
 }
 
-resource "local_file" "foo" {
+resource "local_file" "private_ips" {
   content  = local.tmpl
   filename = "${path.module}/private_ips.txt"
 }
