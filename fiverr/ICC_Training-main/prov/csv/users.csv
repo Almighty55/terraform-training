@@ -1,0 +1,5 @@
+first_name,last_name,class,email_address,description,organizational_unit,groups,enabled
+test,user1,420,tuser1@iavirtualtraining.com,Inductive University Trainee,"OU=Users,OU=goongoblin,DC=goongoblin,DC=tk","",TRUE
+test,user2,420,tuser2@iavirtualtraining.com,Inductive University Trainee,"OU=Users,OU=goongoblin,DC=goongoblin,DC=tk","",TRUE
+test,user3,420,tuser3@iavirtualtraining.com,Inductive University Trainee,"OU=Users,OU=goongoblin,DC=goongoblin,DC=tk","",TRUE
+test,user4,420,tuser4@iavirtualtraining.com,Inductive University Trainee,"OU=Users,OU=goongoblin,DC=goongoblin,DC=tk","",TRUE

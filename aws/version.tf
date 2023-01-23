@@ -5,7 +5,6 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.4.0"
     }
   }
   # backend configs for managing state file
@@ -16,5 +15,14 @@ terraform {
     #! disabled for testing
     #dynamodb_table = "terraform-state-locking"
     encrypt = true
+  }
+}
+
+# Configure the AWS Provider
+provider "aws" {
+  default_tags {
+    tags = {
+      Custodian = "managed-by-terraform"
+    }
   }
 }

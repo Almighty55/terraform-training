@@ -7,6 +7,6 @@ aws/.terraform.lock.hcl
 # ignore keys
 aws/keys
 
-fiverr/
+test/
 
 aws/modules/ec2/instances/guacamole/private_ips.txt

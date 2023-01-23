@@ -21,7 +21,7 @@ resource "aws_key_pair" "jump-key" {
 
 #Create sqlserver
 resource "aws_instance" "jump" {
-  count = 1
+  count = 0
   #* HOSTNAME SCHEME
   /*
     #? Total of 17 characters MAX but not all have to be used
