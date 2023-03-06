@@ -49,7 +49,8 @@ resource "aws_instance" "sqlserver" {
   associate_public_ip_address = false
   vpc_security_group_ids      = [var.sql_sg_output.id]
   subnet_id                   = var.private_subnet_output.id
-  user_data                   = "${path.module}/build_script.txt"
+  user_data                   = file("${path.module}/build_script.txt")
+  user_data_replace_on_change = true
   # user_data         = <<EOF
   # <powershell>
   # Set-DnsClientServerAddress -InterfaceAlias  "Ethernet" -ServerAddresses ("${sort(var.aws_managed_ad_output.dns_ip_addresses)[0]}","${sort(var.aws_managed_ad_output.dns_ip_addresses)[1]}")

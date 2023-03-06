@@ -1,0 +1,15 @@
+<powershell>
+# Download Ignition Installer
+
+$url = 'https://inductiveautomation.com/downloads/ignition/8.1.24'
+$initialWR = Invoke-WebRequest $url -SessionVariable ForCookies 
+
+$headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+$headers.Add("cookie", "$($initialWR.headers.'Set-Cookie')")
+$headers.Add("sec-fetch-site", "same-site")
+$headers.Add("referer", "https://inductiveautomation.com/")
+
+Invoke-RestMethod 'https://files.inductiveautomation.com/release/ia/8.1.24/20230112-0850/ignition-8.1.24-windows-64-installer.exe' -Method 'GET' -Headers $headers -OutFile "C:\ignition-installer.exe"
+
+Start-Process -FilePath "C:\ignition-installer.exe" -ArgumentList "/S" -Wait
+</powershell>
