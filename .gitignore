@@ -42,3 +42,7 @@ terraform.rc
 # Ignore all private keys
 **/keys/
 **.pem**
+
+# extra
+test/
+aws/modules/ec2/instances/guacamole/private_ips.txt

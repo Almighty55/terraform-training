@@ -1,21 +1,16 @@
-resource "aws_s3_bucket" "tfstate_bucket" {
+data "aws_s3_bucket" "tfstate" {
   bucket = "alaraj-terraform-state"
-  #! THIS IS TRUE FOR TESTING
-  force_destroy = true
-  lifecycle {
-    #! THIS IS FALSE FOR TESTING
-    #prevent_destroy = false
-  }
 }
+
 resource "aws_s3_bucket_versioning" "versioning_tfstate" {
-  bucket = aws_s3_bucket.tfstate_bucket.id
+  bucket = data.aws_s3_bucket.tfstate.id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "encryption_tfstate" {
-  bucket = aws_s3_bucket.tfstate_bucket.id
+  bucket = data.aws_s3_bucket.tfstate.id
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
@@ -24,9 +19,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption_tfstat
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public_tfstate" {
-  bucket              = aws_s3_bucket.tfstate_bucket.id
-  block_public_acls   = true
-  block_public_policy = true
+  bucket                  = data.aws_s3_bucket.tfstate.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 #* useful if multiple people are working on the same codebase
