@@ -1,16 +1,28 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: k8-runners
+spec:
+  template:
+    spec:
+      repository: CloudByteSolutions/customer-instance
+      labels: 
+      - k8-autoscaler
 ---
 apiVersion: actions.summerwind.dev/v1alpha1
 kind: HorizontalRunnerAutoscaler
 metadata:
-  name: k8s-runners-autoscaler
-  namespace: actions-runner-system
+  name: k8-autoscaler
 spec:
   scaleTargetRef:
-    name: k8s-runners
-  scaleDownDelaySecondsAfterScaleOut: 300
-  minReplicas: 0
-  maxReplicas: 1
+    kind: RunnerDeployment
+    name: runner-deployment
+  minReplicas: 1
+  maxReplicas: 10
   metrics:
   - type: TotalNumberOfQueuedAndInProgressWorkflowRuns
     repositoryNames:
-      - CloudByteSolutions/testing
+    - CloudByteSolutions/customer-instance
+    
+# TODO: switch to webhook driven scaling
+# https://github.com/actions/actions-runner-controller/blob/master/docs/automatically-scaling-runners.md#webhook-driven-scaling 

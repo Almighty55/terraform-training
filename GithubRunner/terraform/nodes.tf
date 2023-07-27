@@ -34,23 +34,21 @@ resource "aws_eks_node_group" "general" {
   node_role_arn   = aws_iam_role.nodes.arn
   version         = aws_eks_cluster.gha.version
 
-  subnet_ids = [
-    aws_subnet.private-us-east-1a.id,
-    aws_subnet.private-us-east-1b.id
-  ]
+  subnet_ids = aws_subnet.private.*.id
 
   capacity_type  = "ON_DEMAND"
   instance_types = ["t3.small"]
 
-  # Configure these as needed hand in hand with yaml for github workflow
+  # Scaling Configuration
   scaling_config {
-    desired_size = 1
-    max_size     = 1
-    min_size     = 1
+    desired_size = 2  # Adjust based on your workload requirements
+    max_size     = 10 # Adjust based on your application's scalability needs
+    min_size     = 1  # Ensure at least one node is available for high availability
   }
 
+  # Update Configuration
   update_config {
-    max_unavailable = 1
+    max_unavailable = 1 # Allow one node to be unavailable during updates
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.

@@ -25,15 +25,10 @@ resource "aws_iam_role_policy_attachment" "gha-AmazonEKSClusterPolicy" {
 resource "aws_eks_cluster" "gha" {
   name     = "github_actions"
   role_arn = aws_iam_role.gha.arn
-  version  = "1.25"
+  version  = "1.27"
 
   vpc_config {
-    subnet_ids = [
-      aws_subnet.private-us-east-1a.id,
-      aws_subnet.private-us-east-1b.id,
-      aws_subnet.public-us-east-1a.id,
-      aws_subnet.public-us-east-1b.id
-    ]
+    subnet_ids = concat(aws_subnet.private.*.id, aws_subnet.public.*.id)
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.
