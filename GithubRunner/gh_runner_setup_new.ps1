@@ -20,8 +20,8 @@ helm upgrade --install --namespace actions-runner-system --create-namespace `
              --wait actions-runner-controller actions-runner-controller/actions-runner-controller `
              --set syncPerdiod=1m
 
-# Apply deployment to namespace
-kubectl apply -f ./k8s/horizontal-runner-autoscaler.yaml
+# Apply deployment to namespace #* levels up two directories because terraform executes it
+kubectl apply -f ../k8s/horizontal-runner-autoscaler.yaml
 
 #! troubleshooting
 # kubectl get pods -n actions-runner-system
