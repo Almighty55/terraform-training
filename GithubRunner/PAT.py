@@ -1,3 +1,4 @@
+import json
 import uuid
 import re
 import random
@@ -22,16 +23,20 @@ def generate_uuid():
     
     return sanitized_name
 
-def trigger_workflow(repo, username, token, workflow_id, branch_name, payload):
+def trigger_workflow(repo, username, token, workflow_id, branch_name, tf_workspace_uuid, json_payload):
     url = f"https://api.github.com/repos/{username}/{repo}/actions/workflows/{workflow_id}/dispatches"
     headers = {
         "Authorization": f"token {token}",
-        "Accept": "application/vnd.github.v3+json", 
-        "X-GitHub-Api-Version": "2022-11-28" #* https://docs.github.com/en/rest/overview/api-versions
+        "Accept": "application/vnd.github+json", 
+        "X-GitHub-Api-Version": "2022-11-28", #* https://docs.github.com/en/rest/overview/api-versions
+        "Content-Type": "application/json"
     }
     data = {
         "ref": branch_name,
-        "inputs": payload
+        "inputs":{
+            "uuid": tf_workspace_uuid,
+            "json_payload": json_payload
+        }
     }
 
     response = requests.post(url, headers=headers, json=data)
@@ -46,12 +51,12 @@ def trigger_workflow(repo, username, token, workflow_id, branch_name, payload):
 github_username = "CloudByteSolutions"
 repository_name = "customer-instance"
 access_token = ""
-workflow_id = "terraform-apply.yml"
+workflow_id = "terraform-apply-test.yml"
 branch_name = "main"  # Replace with the branch you want to trigger the workflow on
 
 
 #! TESTING
-# tf_workspace_uuid = "bc8746a4e169448e9725a209e53cf523"
+# tf_workspace_uuid = "u5911e482e074e0395a9461b06e450fc"
 tf_workspace_uuid = generate_uuid()
 
 
@@ -64,5 +69,8 @@ payload = {
     "tf_workspace": tf_workspace_uuid
 }
 
-# Trigger the workflow with the sample dummy payload
-trigger_workflow(repository_name, github_username, access_token, workflow_id, branch_name, payload)
+# Convert the data dictionary to a JSON string
+json_payload = json.dumps(payload)
+
+# Trigger the workflow with the sample dummy json_payload
+trigger_workflow(repository_name, github_username, access_token, workflow_id, branch_name, tf_workspace_uuid, json_payload)
