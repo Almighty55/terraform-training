@@ -31,7 +31,7 @@ resource "aws_instance" "guac" {
   }
 
   provisioner "file" {
-    source      = "${path.module}/1-setup.sh"
+    source      = "${path.module}/guacamole-install/1-setup.sh"
     destination = "1-setup.sh"
     connection {
       type        = "ssh"
