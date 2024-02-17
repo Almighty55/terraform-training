@@ -21,7 +21,7 @@ resource "aws_key_pair" "sqlserver-key" {
 
 #Create sqlserver
 resource "aws_instance" "sqlserver" {
-  count = 1
+  count = 2
   #* HOSTNAME SCHEME
   /*
     #? Total of 17 characters MAX but not all have to be used
@@ -40,7 +40,7 @@ resource "aws_instance" "sqlserver" {
           Example: P (Production), D (Development), T (Testing), U (User Acceptance Testing "UAT"), S (Staging)
     #*   Next 6 characters designates device function
           Example: TS (TermServ), WEBSRV (Website Server), DC (Domain Controller), SQL (SQL Server), FIREWL (Firewall), BAKSRV (Backup Server)
-                  APPSRV (Application Server), FS (File Share), HYPVIS (Hypervisor)
+                   APPSRV (Application Server), FS (File Share), HYPVIS (Hypervisor)
     #*   Next 2 characters designates the server number or version starting at "01"
           Example: XAUE1LDISQL01, XAUE1LDISQL02, XAUE1LDEWEBSRV01, XAUE1LDEWEBSRV02*/
   ami                         = data.aws_ami.windows_2022.id
@@ -80,10 +80,6 @@ resource "aws_instance" "sqlserver" {
     Custodian = "managed-by-terraform"
     # nested terraform if else logic, but it checks if a '0' should be appended or not
     # ${count.index} starts at 0 so the '9' condition would technically be the 10th server
-    Name = "${count.index}" == 00 ? "XAUE1WIDSQL01" : "${count.index}" >= 9 ? "XAUE1WIDSQL${count.index + 1}" : "XAUE1WIDSQL0${count.index + 1}"
+    Name = count.index == 0 ? "XAUE1WIDSQL01" : count.index >= 9 ? "XAUE1WIDSQL${count.index + 1}" : "XAUE1WIDSQL0${count.index + 1}"
   }
-
-  # depends_on = [
-  #   # var.aws_managed_ad_output
-  # ]
 }
