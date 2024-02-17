@@ -16,26 +16,6 @@ resource "aws_key_pair" "guacKey" {
   public_key = file("${path.root}/keys/guacKey.pub")
 }
 
-locals {
-  connections = [for i in range(length(var.sqlserver_privateIP)) : {
-    ip        = var.sqlserver_privateIP[i]
-    decrypted = var.sqlserver_pwd_decrypted[i]
-  }]
-
-  tmpl = <<-EOT
-    %{for c in local.connections~}*Connection*
-    ${c.ip}
-    ${c.decrypted}
-
-    %{endfor~}
-  EOT
-}
-
-resource "local_file" "private_ips" {
-  content  = local.tmpl
-  filename = "${path.module}/private_ips.txt"
-}
-
 #Create apache guacamole server
 resource "aws_instance" "guac" {
   ami                         = data.aws_ami.ubuntu.id
@@ -47,12 +27,12 @@ resource "aws_instance" "guac" {
 
   tags = {
     Custodian = "managed-by-terraform"
-    Name      = "XAUE1LEDGUACSRV01"
+    Name      = "XAUE1LEDGUAC01"
   }
 
   provisioner "file" {
-    source      = "${path.module}/import_connections.sh"
-    destination = "import_connections.sh"
+    source      = "${path.module}/1-setup.sh"
+    destination = "1-setup.sh"
     connection {
       type        = "ssh"
       user        = "ubuntu"
@@ -61,12 +41,11 @@ resource "aws_instance" "guac" {
     }
   }
 
-  #TODO grab the data from local.tmpl and build a new import_connections script that can handle that format
   #TODO get this to trigger on any changes to sql server and add in jump server config
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod +x import_connections.sh",
-      "sudo ./import_connections.sh '${var.sqlserver_privateIP[0]}' '${var.sqlserver_pwd_decrypted[0]}'"
+      "sudo chmod +x 1-setup.sh",
+      "sudo ./1-setup.sh '${join(",", var.sqlserver_privateIP)}' '${join(",", var.sqlserver_pwd_decrypted)}'"
     ]
     connection {
       type        = "ssh"

@@ -1,5 +1,5 @@
 resource "aws_eip" "nat_eip" {
-  vpc        = true
+  domain           = "vpc"
   depends_on = [var.igw_output]
   tags = {
     Custodian = "managed-by-terraform"

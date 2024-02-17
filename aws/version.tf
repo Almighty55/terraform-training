@@ -8,12 +8,12 @@ terraform {
     }
   }
   # backend configs for managing state file
-  backend "s3" {
-    bucket = "alaraj-terraform-state"
-    key    = "tfstate/dev/terraform.tfstate"
-    region = "us-east-1"
-    #! disabled for testing
-    #dynamodb_table = "terraform-state-locking"
-    encrypt = true
-  }
+  # backend "s3" {
+  #   bucket = "alaraj-terraform-state"
+  #   key    = "tfstate/dev/terraform.tfstate"
+  #   region = "us-east-1"
+  #   #! disabled for testing
+  #   #dynamodb_table = "terraform-state-locking"
+  #   encrypt = true
+  # }
 }
